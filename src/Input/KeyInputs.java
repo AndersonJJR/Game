@@ -1,9 +1,6 @@
 package Input;
 
 
-import Entity.Player;
-import Main.GamePanel;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -11,11 +8,7 @@ public class KeyInputs implements KeyListener {
 
     public boolean upPressed, downPressed, leftPressed, rightPressed;
 
-    private final GamePanel gamePanel;
-    private final Player player;
-    public KeyInputs(GamePanel gamePanel, Player player) {
-        this.gamePanel = gamePanel;
-        this.player = player;
+    public KeyInputs() {
     }
 
     @Override

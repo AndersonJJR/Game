@@ -11,6 +11,7 @@ public class GameEngine extends Canvas implements Runnable {
     private GameWindow gameWindow;
     private GamePanel gamePanel;
     private Player player;
+    private KeyInputs keyInputs;
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -29,13 +30,25 @@ public class GameEngine extends Canvas implements Runnable {
     public GameEngine() {
 
         gamePanel = new GamePanel();
+        player = new Player(this, gamePanel);
+        keyInputs = new KeyInputs();
+
+        gamePanel.setPlayer(player);
+        player.setKeyInputs(keyInputs);
+
+        gamePanel.addKeyListener(keyInputs);
+        gamePanel.setFocusable(true);
+
         gameWindow = new GameWindow(gamePanel);
+
         gamePanel.requestFocus();
         start();
     }
 
     protected void updatePlayer() {
-        player.update();
+        if (player != null) {
+            player.update();
+        }
     }
 
     private void update(float secondsPerUpdate) {
@@ -86,6 +99,7 @@ public class GameEngine extends Canvas implements Runnable {
             // Lógica de atulização usando o Fixed Timestep
             while (timeAccumulator >= SECONDS_PER_UPDATE) {
                 update(SECONDS_PER_UPDATE);
+                updatePlayer();
                 timeAccumulator -= SECONDS_PER_UPDATE;
                 updates++; // Para debugar o FPS
             }
@@ -93,8 +107,7 @@ public class GameEngine extends Canvas implements Runnable {
             // Lógica de Renderização com Variable Timestep com Interpolação
             final float interpolation = (float) (timeAccumulator / SECONDS_PER_UPDATE);
             render(interpolation);
-            updatePlayer();
-            repaint();
+            gamePanel.repaint();
             frames++;
 
             // Exibe o FPS e UPS

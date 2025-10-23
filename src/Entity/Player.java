@@ -4,11 +4,17 @@ import Input.KeyInputs;
 import Main.GameEngine;
 import Main.GamePanel;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
 public class Player {
 
-    GamePanel gamePanel;
-    GameEngine gameEngine;
+    private final GamePanel gamePanel;
+    private final GameEngine gameEngine;
     KeyInputs keyH;
+
+    private BufferedImage sprite;
 
     private int playerX = 100, playerY = 450, speed = 3 ;
     private int playerLargura = 50, playerAltura = 50;
@@ -22,6 +28,19 @@ public class Player {
     public Player(GameEngine gameEngine , GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.gameEngine = gameEngine;
+        loadSprite();
+    }
+
+    private void loadSprite() {
+        try {
+            sprite = ImageIO.read(getClass().getResourceAsStream("/res/IDLE.png"));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void setKeyInputs(KeyInputs keyH) {
+        this.keyH = keyH;
     }
 
     public int getPlayerX() {
@@ -96,7 +115,15 @@ public class Player {
         this.playerY += value;
     }
 
+    public BufferedImage getSprite() {
+        return sprite;
+    }
+
     public void update() {
+
+        if (keyH != null) {
+            return;
+        }
 
         if (keyH.upPressed || keyH.downPressed || keyH.rightPressed || keyH.leftPressed) {
 
@@ -108,10 +135,10 @@ public class Player {
                 playerY += speed;
             } else if (keyH.rightPressed) {
                 direction = "right";
-                playerX -= speed;
+                playerX += speed;
             } else if (keyH.leftPressed) {
                 direction = "left";
-                playerX += speed;
+                playerX -= speed;
             }
         }
     }

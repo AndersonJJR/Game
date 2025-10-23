@@ -14,8 +14,7 @@ public class GameWindow extends JFrame {
         janela.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Impede que o usuário redimensione a janela.
-        janela.setResizable(false);
-        janela.add(new GamePanel());
+        janela.setResizable(true);
 
         // Ajusta o tamanho da janela automaticamente para caber o Main.GamePanel.
         janela.pack();

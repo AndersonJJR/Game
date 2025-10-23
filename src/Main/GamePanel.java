@@ -19,13 +19,23 @@ public class GamePanel extends JPanel {
         this.setBackground(Color.BLACK);
     }
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        if (player == null) {
+            return;
+        }
+
         // Desenha o jogador
-        g.setColor(Color.WHITE);
-        g.fillRect(player.getPlayerX(), player.getPlayerY(), player.getPlataformaLargura(), player.getPlataformaAltura());
+        if (player.getSprite() != null) {
+            g.drawImage(player.getSprite(), player.getPlayerX(), player.getPlayerY()
+                    , player.getPlataformaLargura(), player.getPlataformaAltura(), null);
+        }
 
         // Desenha a plataforma
         g.setColor(Color.GREEN);
