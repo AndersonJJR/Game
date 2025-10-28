@@ -36,10 +36,12 @@ public class GameEngine extends Canvas implements Runnable {
         gamePanel.setPlayer(player);
         player.setKeyInputs(keyInputs);
 
+        gameWindow = new GameWindow(gamePanel);
+
         gamePanel.addKeyListener(keyInputs);
         gamePanel.setFocusable(true);
+        gamePanel.requestFocusInWindow();
 
-        gameWindow = new GameWindow(gamePanel);
 
         gamePanel.requestFocus();
         start();
