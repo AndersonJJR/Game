@@ -121,7 +121,7 @@ public class Player {
 
     public void update() {
 
-        if (keyH != null) {
+        if (keyH == null) {
             return;
         }
 
