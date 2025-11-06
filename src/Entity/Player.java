@@ -25,10 +25,10 @@ public class Player {
     private final long ANIMATION_SPEED = 1000; // 1 segundo por frame (1000ms)
     
     // Dimensões da spritesheet
-    private final int SPRITE_SIZE = 64; // Cada sprite tem 64x64 pixels
+    private final int SPRITE_SIZE = 32; // Cada sprite tem 64x64 pixels
     private int totalFrames = 0;
 
-    private int playerX = 100, playerY = 450, speed = 3;
+    private int playerX = 100, playerY = 450, speed = 2;
     private int playerLargura = 50, playerAltura = 50;
 
     private int plataformaX = 0;
