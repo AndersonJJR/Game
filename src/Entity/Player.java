@@ -15,18 +15,31 @@ public class Player {
     KeyInputs keyH;
 
     // Sistema de Sprites
-    private BufferedImage spriteSheet;
+    private BufferedImage idleSpriteSheet;
+    private BufferedImage runSpriteSheet;
     private BufferedImage[] idleSprites;
+    private BufferedImage[] runSprites;
     private BufferedImage currentSprite;
-    
+
     // Controle de animação
     private int currentFrame = 0;
     private long lastFrameTime = 0;
-    private final long ANIMATION_SPEED = 1000; // 1 segundo por frame (1000ms)
-    
+    private final long ANIMATION_SPEED = 100; // 100ms por frame (animação mais rápida)
+
     // Dimensões da spritesheet
-    private final int SPRITE_SIZE = 32; // Cada sprite tem 64x64 pixels
-    private int totalFrames = 0;
+    private final int SPRITE_SIZE = 32; // Cada sprite tem 32x32 pixels
+    private int idleTotalFrames = 0;
+    private int runTotalFrames = 0;
+
+    // Estados de animação
+    private AnimationState currentState = AnimationState.IDLE;
+    private AnimationState previousState = AnimationState.IDLE;
+
+    // Enum para controlar estados de animação
+    public enum AnimationState {
+        IDLE,
+        RUN
+    }
 
     private int playerX = 100, playerY = 450, speed = 2;
     private int playerLargura = 50, playerAltura = 50;
@@ -35,79 +48,111 @@ public class Player {
     private int plataformaY = 500;
     private int plataformaLargura = GamePanel.LARGURA_TELA;
     private int plataformaAltura = 100;
+
     private String direction;
 
     public Player(GameEngine gameEngine, GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.gameEngine = gameEngine;
         loadSprites();
-        lastFrameTime = System.currentTimeMillis(); // Inicializa o timer
+        lastFrameTime = System.currentTimeMillis();
     }
 
     private void loadSprites() {
         try {
-            // Carrega a spritesheet completa
-            spriteSheet = ImageIO.read(getClass().getResourceAsStream("/res/IDLE.png"));
-            
-            if (spriteSheet != null) {
-                // Calcula quantos frames existem na spritesheet (assumindo que é horizontal)
-                totalFrames = spriteSheet.getWidth() / SPRITE_SIZE;
-                
-                // Cria array para armazenar cada frame individual
-                idleSprites = new BufferedImage[totalFrames];
-                
-                // Recorta cada frame da spritesheet usando subImage
-                for (int i = 0; i < totalFrames; i++) {
-                    idleSprites[i] = spriteSheet.getSubimage(
-                        i * SPRITE_SIZE,  // x position
-                        0,                // y position (assumindo que todos os frames estão na primeira linha)
-                        SPRITE_SIZE,      // width
-                        SPRITE_SIZE       // height
+            // Carrega a spritesheet IDLE
+            idleSpriteSheet = ImageIO.read(getClass().getResourceAsStream("/res/IDLE.png"));
+
+            if (idleSpriteSheet != null) {
+                idleTotalFrames = idleSpriteSheet.getWidth() / SPRITE_SIZE;
+                idleSprites = new BufferedImage[idleTotalFrames];
+
+                for (int i = 0; i < idleTotalFrames; i++) {
+                    idleSprites[i] = idleSpriteSheet.getSubimage(
+                            i * SPRITE_SIZE,
+                            0,
+                            SPRITE_SIZE,
+                            SPRITE_SIZE
                     );
                 }
-                
-                // Define o primeiro sprite como atual
-                currentSprite = idleSprites[0];
-                
-                System.out.println("Spritesheet carregada com sucesso! Total de frames: " + totalFrames);
+                System.out.println("IDLE Spritesheet carregada! Frames: " + idleTotalFrames);
             }
+
+            // Carrega a spritesheet RUN
+            runSpriteSheet = ImageIO.read(getClass().getResourceAsStream("/res/RUN.png"));
+
+            if (runSpriteSheet != null) {
+                runTotalFrames = runSpriteSheet.getWidth() / SPRITE_SIZE;
+                runSprites = new BufferedImage[runTotalFrames];
+
+                for (int i = 0; i < runTotalFrames; i++) {
+                    runSprites[i] = runSpriteSheet.getSubimage(
+                            i * SPRITE_SIZE,
+                            0,
+                            SPRITE_SIZE,
+                            SPRITE_SIZE
+                    );
+                }
+                System.out.println("RUN Spritesheet carregada! Frames: " + runTotalFrames);
+            }
+
+            // Define o primeiro sprite IDLE como atual
+            currentSprite = idleSprites[0];
+
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Erro ao carregar a spritesheet!");
+            System.err.println("Erro ao carregar as spritesheets!");
         }
     }
-    
+
     /**
-     * Atualiza a animação do sprite baseado no tempo
+     * Atualiza a animação do sprite baseado no tempo e estado
      */
     private void updateAnimation() {
-        if (idleSprites == null || totalFrames == 0) return;
-        
+        // Verifica se mudou de estado
+        if (currentState != previousState) {
+            currentFrame = 0; // Reinicia a animação ao mudar de estado
+            previousState = currentState;
+            System.out.println("Estado mudou para: " + currentState);
+        }
+
         long currentTime = System.currentTimeMillis();
-        
+
         // Verifica se já passou tempo suficiente para trocar de frame
         if (currentTime - lastFrameTime >= ANIMATION_SPEED) {
-            // Avança para o próximo frame
-            currentFrame = (currentFrame + 1) % totalFrames;
-            
-            // Atualiza o sprite atual
-            currentSprite = idleSprites[currentFrame];
-            
-            // Atualiza o tempo do último frame
-            lastFrameTime = currentTime;
-            
-            // Debug: mostra qual frame está sendo exibido
-            System.out.println("Frame atual: " + (currentFrame + 1) + "/" + totalFrames);
+            // Seleciona o array de sprites correto baseado no estado
+            BufferedImage[] activeSprites;
+            int totalFrames;
+
+            if (currentState == AnimationState.RUN) {
+                activeSprites = runSprites;
+                totalFrames = runTotalFrames;
+            } else {
+                activeSprites = idleSprites;
+                totalFrames = idleTotalFrames;
+            }
+
+            if (activeSprites != null && totalFrames > 0) {
+                // Avança para o próximo frame
+                currentFrame = (currentFrame + 1) % totalFrames;
+                currentSprite = activeSprites[currentFrame];
+                lastFrameTime = currentTime;
+            }
         }
     }
-    
+
     /**
-     * Método alternativo para controlar a velocidade da animação
-     * @param animationSpeedMs velocidade em milissegundos
+     * Define o estado de animação baseado no movimento
      */
-    public void setAnimationSpeed(long animationSpeedMs) {
-        // Este método pode ser usado para mudar a velocidade durante o jogo
-        // Por exemplo: setAnimationSpeed(500) para animação mais rápida
+    private void updateAnimationState() {
+        // Verifica se está se movendo
+        boolean isMoving = keyH.rightPressed || keyH.leftPressed;
+
+        if (isMoving) {
+            currentState = AnimationState.RUN;
+        } else {
+            currentState = AnimationState.IDLE;
+        }
     }
 
     public void setKeyInputs(KeyInputs keyH) {
@@ -192,22 +237,24 @@ public class Player {
     public BufferedImage getSprite() {
         return currentSprite;
     }
-    
+
     /**
      * Método principal de atualização do player
      */
     public void update() {
-        // Atualiza a animação primeiro
-        updateAnimation();
-        
         // Verifica se o sistema de input está funcionando
         if (keyH == null) {
             return;
         }
 
+        // Atualiza o estado da animação baseado no input
+        updateAnimationState();
+
+        // Atualiza a animação
+        updateAnimation();
+
         // Processa movimento baseado nas teclas pressionadas
         if (keyH.upPressed || keyH.downPressed || keyH.rightPressed || keyH.leftPressed) {
-
             if (keyH.upPressed) {
                 direction = "up";
                 playerY -= speed;
