@@ -34,7 +34,7 @@ public class GamePanel extends JPanel {
         // Desenha o jogador
         if (player.getSprite() != null) {
             g.drawImage(player.getSprite(), player.getPlayerX(), player.getPlayerY(),
-                    128 , 128, null);
+                    64 , 64, null);
         }
 
         // Desenha a plataforma
