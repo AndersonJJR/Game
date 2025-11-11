@@ -1,0 +1,169 @@
+package Util;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DatabaseConnection {
+
+    private static final String DB_URL = "jdbc:mysql://26.190.228.198:3306/game_data"; // IP DO BANCO E NOME DO BANCO
+    private static final String DB_USER = "root"; //USUARIO DO BANCO
+    private static final String DB_PASS = "root";   //SENHA DO BANCO
+
+    public static Connection getConnection() {
+        try {
+            // Isso registra o driver, embora em JDBC 4.0+ seja muitas vezes automático
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Tenta estabelecer a conexão
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+            System.out.println("Conexão com o banco de dados estabelecida!");
+            return connection;
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao conectar ao banco de dados: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        } catch (ClassNotFoundException e) {
+            System.err.println("Driver MySQL não encontrado! Verifique se o .jar está no projeto.");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Metodo simples para testar a conexão (opcional)
+    public static void main(String[] args) {
+        Connection conn = getConnection();
+        if (conn != null) {
+            try {
+                conn.close();
+                System.out.println("Conexão fechada com sucesso.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static int findOrCreatePlayer(String playerName) {
+
+        String selectSql = "SELECT id_jogador FROM tbl_jogador WHERE nome = ?";
+        String insertSql = "INSERT INTO tbl_jogador (nome) VALUES (?)";
+
+        // Usamos um try-with-resources para a conexão (fecha automaticamente)
+        try (Connection conn = getConnection()) {
+
+            if (conn == null) return -1;
+
+            // --- 1. Tenta Encontrar o Jogador ---
+            // (try-with-resources para o PreparedStatement e ResultSet)
+            try (PreparedStatement pstmtSelect = conn.prepareStatement(selectSql)) {
+                pstmtSelect.setString(1, playerName);
+
+                try (ResultSet rs = pstmtSelect.executeQuery()) {
+                    if (rs.next()) {
+                        // --- Jogador ENCONTRADO ---
+                        int playerID = rs.getInt("id_jogador");
+                        System.out.println("Jogador '" + playerName + "' encontrado com ID: " + playerID);
+                        return playerID; // Retorna o ID existente
+                    }
+                }
+            }
+
+            // --- 2. Jogador NÃO Encontrado, crie um novo ---
+            System.out.println("Jogador '" + playerName + "' não encontrado. Criando novo...");
+
+            // (try-with-resources para o PreparedStatement de inserção)
+            try (PreparedStatement pstmtInsert = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
+                pstmtInsert.setString(1, playerName);
+                int affectedRows = pstmtInsert.executeUpdate();
+
+                if (affectedRows > 0) {
+                    try (ResultSet genKeys = pstmtInsert.getGeneratedKeys()) {
+                        if (genKeys.next()) {
+                            int playerID = genKeys.getInt(1);
+                            System.out.println("Jogador '" + playerName + "' criado com ID: " + playerID);
+                            return playerID; // Retorna o NOVO ID
+                        }
+                    }
+                }
+            }
+
+            // Se algo falhou na inserção
+            return -1;
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar ou criar jogador:");
+            e.printStackTrace();
+            return -1; // Retorna -1 em caso de erro
+        }
+    }
+
+    public static void saveScore(int playerID, double tempoCorrido) {
+        String sql = "INSERT INTO tbl_pontuacao (id_jogador, tempo_corrido) VALUES (?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            if (conn == null) {
+                System.err.println("Não foi possível salvar a pontuação: conexão nula.");
+                return;
+            }
+
+            // Define os parâmetros com os valores corretos
+            pstmt.setInt(1, playerID);
+            pstmt.setDouble(2, tempoCorrido);
+
+            pstmt.executeUpdate();
+
+            System.out.printf("Pontuação salva para ID %d! Tempo: %.2f segundos%n", playerID, tempoCorrido);
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao salvar pontuação:");
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Busca no banco o Top 10 de scores mais rápidos.
+     * @return Uma lista de Strings formatadas para o ranking.
+     */
+    public static List<String> getTopScores() {
+        List<String> topScores = new ArrayList<>();
+
+        // Este SQL busca o nome (da tbl_jogador), o tempo e a pontuação (da tbl_pontuacao),
+        // junta as duas tabelas, ordena pelo tempo mais RÁPIDO (ASC) e limita a 10.
+        String sql = "SELECT j.nome, p.tempo_corrido, p.pontos " +
+                "FROM tbl_pontuacao p " +
+                "JOIN tbl_jogador j ON p.id_jogador = j.id_jogador " +
+                "ORDER BY p.tempo_corrido ASC " +
+                "LIMIT 10";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            if (conn == null) return topScores; // Retorna lista vazia se a conexão falhar
+
+            int rank = 1; // Contador para o ranking
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                double tempo = rs.getDouble("tempo_corrido");
+                int pontos = rs.getInt("pontos"); // Pega a pontuação
+
+                // Formata a linha como: "1. Marcos (34.56 s) - 1000 pts"
+                String scoreLine = String.format("%d. %s (%.2f s) - %d pts",
+                        rank, nome, tempo, pontos);
+                topScores.add(scoreLine);
+                rank++;
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar top scores:");
+            e.printStackTrace();
+        }
+        return topScores;
+    }
+}

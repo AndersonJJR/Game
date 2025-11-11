@@ -270,4 +270,8 @@ public class Player {
             }
         }
     }
+    public double getGameTime() {
+        // O player pede o tempo para o gameEngine
+        return gameEngine.getElapsedGameTimeSeconds();
+    }
 }
