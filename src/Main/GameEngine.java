@@ -6,12 +6,18 @@ import Input.KeyInputs;
 import java.awt.*;
 import java.io.Serial;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 public class GameEngine extends Canvas implements Runnable {
 
     private GameWindow gameWindow;
     private GamePanel gamePanel;
     private Player player;
     private KeyInputs keyInputs;
+
+    private long gameStartTime; //MARCOS
+    private double elapsedGameTimeSeconds; //MARCOS
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -21,30 +27,31 @@ public class GameEngine extends Canvas implements Runnable {
     private volatile boolean running = false;
 
     //Controle FPS
-
     public static final int FPS = 60;
 
     //Intervalo de tempo para cada atualização em segundos.
     public static final float SECONDS_PER_UPDATE = 1.0f / FPS;
 
-    public GameEngine() {
+    private int playerID;
 
-        gamePanel = new GamePanel();
-        player = new Player(this, gamePanel);
-        keyInputs = new KeyInputs();
+    public GameEngine(GamePanel gamePanel, int playerID) {
+        this.gamePanel = gamePanel;
+        this.playerID = playerID; // Armazena o ID do jogador
 
+        // Inicializa os componentes do jogo
+        this.player = new Player(this, gamePanel);
+        this.keyInputs = new KeyInputs();
+
+        // Configura os links
         gamePanel.setPlayer(player);
         player.setKeyInputs(keyInputs);
 
-        gameWindow = new GameWindow(gamePanel);
-
+        // Configura o input no painel
         gamePanel.addKeyListener(keyInputs);
         gamePanel.setFocusable(true);
-        gamePanel.requestFocusInWindow();
 
-
-        gamePanel.requestFocus();
-        start();
+        // Marca o tempo de início
+        gameStartTime = System.nanoTime();
     }
 
     protected void updatePlayer() {
@@ -56,11 +63,12 @@ public class GameEngine extends Canvas implements Runnable {
     private void update(float secondsPerUpdate) {
     }
 
-    protected void render(float interpolation) {}
+    protected void render(float interpolation) {
+    }
 
     // Inicia o game loop em uma nova thread
     public synchronized void start() {
-        if(running) return;
+        if (running) return;
         running = true;
         gameThread = new Thread(this);
         gameThread.start();
@@ -68,8 +76,9 @@ public class GameEngine extends Canvas implements Runnable {
 
     // Para o game loop de forma segura
     public synchronized void stop() {
-        if(!running) return;
+        if (!running) return;
         running = false;
+        Util.DatabaseConnection.saveScore(this.playerID, elapsedGameTimeSeconds);
         try {
             gameThread.join();
         } catch (InterruptedException e) {
@@ -88,11 +97,13 @@ public class GameEngine extends Canvas implements Runnable {
         int frames = 0;
         int updates = 0;
 
-        while(running) {
+        while (running) {
             long now = System.nanoTime();
             // Calcula o tempo que passou desde a última verificação em segundos
             double elapsedTime = (now - lastTime) / 1000000000.0;
             lastTime = now;
+
+            elapsedGameTimeSeconds = (now - gameStartTime) / 1000000000.0; //MARCOS
 
             //Adiciona o tempo decorrido ao acumulador
             timeAccumulator += elapsedTime;
@@ -114,7 +125,7 @@ public class GameEngine extends Canvas implements Runnable {
 
             // Exibe o FPS e UPS
             if (System.currentTimeMillis() - timer > 1000) {
-                System.out.printf("UPS: %d, FPS: %d%n", updates, frames);
+                System.out.printf("UPS: %d, FPS: %d%n, Tempo: %.2f s%n", updates, frames, elapsedGameTimeSeconds);
                 updates = 0;
                 frames = 0;
                 timer += 1000;
@@ -127,6 +138,14 @@ public class GameEngine extends Canvas implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    public double getElapsedGameTimeSeconds() {
+        return elapsedGameTimeSeconds;
     }
 
 }
