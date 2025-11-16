@@ -8,7 +8,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Locale setLocale = Locale.getDefault();
         // Inicia o Swing
         SwingUtilities.invokeLater(new Runnable() {
             @Override
