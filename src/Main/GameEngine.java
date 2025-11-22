@@ -6,67 +6,63 @@ import Input.KeyInputs;
 import java.awt.*;
 import java.io.Serial;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
 public class GameEngine extends Canvas implements Runnable {
-
-    private GameWindow gameWindow;
-    private GamePanel gamePanel;
-    private Player player;
-    private KeyInputs keyInputs;
-
-    private long gameStartTime; //MARCOS
-    private double elapsedGameTimeSeconds; //MARCOS
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    //Controle Main.Game Loop
+    // Variáveis
+    private GamePanel gamePanel;
+    private Player player;
+    private KeyInputs keyInputs;
+
+    private double elapsedGameTimeSeconds = 0; // O tempo de jogo acumulado
+
+    // Controle do Loop
     private Thread gameThread;
     private volatile boolean running = false;
 
-    //Controle FPS
+    // Controle FPS
     public static final int FPS = 60;
-
-    //Intervalo de tempo para cada atualização em segundos.
     public static final float SECONDS_PER_UPDATE = 1.0f / FPS;
 
     private int playerID;
 
     public GameEngine(GamePanel gamePanel, int playerID) {
         this.gamePanel = gamePanel;
-        this.playerID = playerID; // Armazena o ID do jogador
+        this.playerID = playerID;
 
-        // Inicializa os componentes do jogo
         this.player = new Player(this, gamePanel);
         this.keyInputs = new KeyInputs();
 
-        // Configura os links
+        // Configurações
         gamePanel.setPlayer(player);
         player.setKeyInputs(keyInputs);
-
-        // Configura o input no painel
         gamePanel.addKeyListener(keyInputs);
         gamePanel.setFocusable(true);
-
-        // Marca o tempo de início
-        gameStartTime = System.nanoTime();
     }
 
-    protected void updatePlayer() {
-        if (player != null) {
-            player.update();
+    // --- PAUSE: Checa se apertou ESC ---
+    private void checkPauseInput() {
+        if (keyInputs.escPressed) {
+            boolean estadoAtual = gamePanel.isPaused();
+            gamePanel.setPaused(!estadoAtual); // Inverte
+            keyInputs.escPressed = false;      // Consome o clique
         }
     }
 
-    private void update(float secondsPerUpdate) {
+    // --- UPDATE: Lógica de movimento (Só roda se não estiver pausado) ---
+    private void update() {
+        if (player != null) {
+            player.update();
+        }
+        // updateInimigos(); // Adicione outras lógicas aqui
     }
 
     protected void render(float interpolation) {
+        // Reservado para interpolação visual
     }
 
-    // Inicia o game loop em uma nova thread
     public synchronized void start() {
         if (running) return;
         running = true;
@@ -74,7 +70,6 @@ public class GameEngine extends Canvas implements Runnable {
         gameThread.start();
     }
 
-    // Para o game loop de forma segura
     public synchronized void stop() {
         if (!running) return;
         running = false;
@@ -88,50 +83,53 @@ public class GameEngine extends Canvas implements Runnable {
 
     @Override
     public void run() {
-        // Usa o tempo de alta complexidade do sistema (nanosegundos)
         long lastTime = System.nanoTime();
         double timeAccumulator = 0.0;
 
-        //Contadores para debugar
         long timer = System.currentTimeMillis();
         int frames = 0;
         int updates = 0;
 
         while (running) {
             long now = System.nanoTime();
-            // Calcula o tempo que passou desde a última verificação em segundos
             double elapsedTime = (now - lastTime) / 1000000000.0;
             lastTime = now;
 
-            elapsedGameTimeSeconds = (now - gameStartTime) / 1000000000.0; //MARCOS
+            // 1. Verifica Pause (SEMPRE RODA)
+            checkPauseInput();
 
-            //Adiciona o tempo decorrido ao acumulador
-            timeAccumulator += elapsedTime;
+            // 2. Lógica do Jogo (SÓ RODA SE NÃO TIVER PAUSADO)
+            if (!gamePanel.isPaused()) {
 
+                // Acumula o tempo de jogo (Relógio)
+                elapsedGameTimeSeconds += elapsedTime;
 
-            // Lógica de atulização usando o Fixed Timestep
-            while (timeAccumulator >= SECONDS_PER_UPDATE) {
-                update(SECONDS_PER_UPDATE);
-                updatePlayer();
-                timeAccumulator -= SECONDS_PER_UPDATE;
-                updates++; // Para debugar o FPS
+                // Acumula a física (para o Fixed Timestep)
+                timeAccumulator += elapsedTime;
+
+                // Loop de Física (Fixed Timestep)
+                while (timeAccumulator >= SECONDS_PER_UPDATE) {
+                    update(); // Chama a lógica de movimento do jogo
+                    timeAccumulator -= SECONDS_PER_UPDATE;
+                    updates++;
+                }
             }
 
-            // Lógica de Renderização com Variable Timestep com Interpolação
-            final float interpolation = (float) (timeAccumulator / SECONDS_PER_UPDATE);
+            // 3. Renderiza (SEMPRE RODA - desenha o jogo ou a tela de pause)
+            float interpolation = (float) (timeAccumulator / SECONDS_PER_UPDATE);
             render(interpolation);
-            gamePanel.repaint();
+            gamePanel.repaint(); // Um único repaint por frame
             frames++;
 
-            // Exibe o FPS e UPS
+            // Debug FPS
             if (System.currentTimeMillis() - timer > 1000) {
-                System.out.printf("UPS: %d, FPS: %d%n, Tempo: %.2f s%n", updates, frames, elapsedGameTimeSeconds);
+                System.out.printf("UPS: %d, FPS: %d, Tempo: %.2f s%n", updates, frames, elapsedGameTimeSeconds);
                 updates = 0;
                 frames = 0;
                 timer += 1000;
             }
 
-            // Sistema de pausa para máquinas muito fortes de hardware
+            // Sleep para aliviar CPU
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
@@ -147,5 +145,4 @@ public class GameEngine extends Canvas implements Runnable {
     public double getElapsedGameTimeSeconds() {
         return elapsedGameTimeSeconds;
     }
-
 }

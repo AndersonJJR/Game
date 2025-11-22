@@ -8,6 +8,8 @@ public class KeyInputs implements KeyListener {
 
     public boolean upPressed, downPressed, leftPressed, rightPressed;
 
+    public boolean escPressed;
+
     public KeyInputs() {
     }
 
@@ -32,6 +34,9 @@ public class KeyInputs implements KeyListener {
         if (code == KeyEvent.VK_D){
             rightPressed = true;
         }
+        if (code == KeyEvent.VK_ESCAPE){
+            escPressed= true;
+        }
     }
 
     @Override
@@ -49,6 +54,9 @@ public class KeyInputs implements KeyListener {
         }
         if (code == KeyEvent.VK_D){
             rightPressed = false;
+        }
+        if (code ==KeyEvent.VK_ESCAPE){
+            escPressed= false;
         }
     }
 }
