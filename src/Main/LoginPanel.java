@@ -1,7 +1,7 @@
 package Main;
 
 import Util.DatabaseConnection;
-
+import audio.AudioManager;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -23,6 +23,9 @@ public class LoginPanel extends JPanel {
 
     public LoginPanel(GameWindow gameWindow) {
         this.gameWindow = gameWindow;
+        // 🔊 TOCAR MÚSICA DO MENU
+        AudioManager.playBackgroundMusic("menu_loop.wav");
+
 
         // 1. Carrega os recursos
         this.CeuImg = loadCeuImg();

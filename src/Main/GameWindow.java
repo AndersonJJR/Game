@@ -1,5 +1,6 @@
 package Main;
 
+import audio.AudioManager;
 import javax.swing.*;
 import java.awt.CardLayout;
 import java.awt.event.WindowAdapter;
@@ -69,6 +70,11 @@ public class GameWindow extends JFrame {
             // --- CORREÇÃO 1: Força o Java a desenhar a nova tela AGORA ---
             mainContainer.revalidate();
             mainContainer.repaint();
+
+            // PARAR MÚSICA DO MENU E INICIAR FASE 1
+            AudioManager.stopBackgroundMusic();
+            AudioManager.playBackgroundMusic("1-fase.wav");
+
 
             // --- CORREÇÃO 2: Delay no Foco ---
             // Isso espera a tela terminar de desenhar para ENTÃO pedir o teclado e iniciar o loop.

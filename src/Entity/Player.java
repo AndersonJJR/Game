@@ -7,6 +7,9 @@ import Main.GamePanel;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
+import audio.AudioManager;
+
+
 public class Player {
 
     private final GamePanel gamePanel;
@@ -171,4 +174,13 @@ public class Player {
     public double getGameTime() {
         return gameEngine.getElapsedGameTimeSeconds();
     }
+
+
+// ===================================
+// SOM DE MORTE – você coloca aqui ↓
+// ===================================
+public void playDeathSound() {
+    AudioManager.stopBackgroundMusic();
+    AudioManager.playBackgroundMusic("death.wav");
 }
+ }
