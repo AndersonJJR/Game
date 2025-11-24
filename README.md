@@ -45,6 +45,7 @@ Como o projeto ainda não possui um executável (`.jar` ou `.exe`) distribuído,
 
 ```bash
 git clone https://github.com/AndersonJJR/Game.git
+
 ```
 
 ## 👥 Autores
@@ -53,7 +54,7 @@ git clone https://github.com/AndersonJJR/Game.git
   <tr>
     <td align="center">
       <a href="https://www.linkedin.com/in/andersonchavesjunior/">
-        <img src="https://avatars.githubusercontent.com/u/00000000?v=4" width="100px;" alt="Foto do Anderson"/><br>
+        <img src="https://avatars.githubusercontent.com/u/00000000?v=4" width="100px;" alt="/images/1761921712659.jpg"/><br>
         <sub>
           <b>Anderson Júnior</b>
         </sub>
