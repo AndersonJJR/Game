@@ -130,7 +130,7 @@ public class GameMap {
         }
 
         // =============================ATUALIZA A CAMERA=============================
-        updateCamera(width);
+
 
         // =============================CONJUNTO DE NUVEM PARA PARALLAX=============================
         // Nuvens conjunto 1
@@ -161,21 +161,6 @@ public class GameMap {
     // ============================================================
     // CÂMERA DO JOGO
     // ============================================================
-    private void updateCamera(int width) {
-        if (player == null) return;
-//=============================ZONA DE MORTE DA CAMERA=============================
-        int deadzone = width / 3;
-
-        //=============================ACOMPANHA O X DO PLAYER=============================
-        int px = player.getWorldX();
-
-        //=============================ACOMPANHA O PLAYER APOS PASSAR DA DEADZONE=============================
-        if (px > deadzone) {
-            cameraX = px - deadzone;
-        }
-
-        if (cameraX < 0) cameraX = 0;
-    }
 
     // ============================================================
     // REESCALAR IMAGENS
@@ -294,6 +279,30 @@ public class GameMap {
 
             for (int x = startX; x < width; x += iw)
                 g.drawImage(img, x, y, null);
+        }
+    }
+
+    public void reset() {
+        // Zera a câmera para o início do jogo
+        this.cameraX = 0;
+
+        // Se você quiser gerar árvores novas toda vez que morrer, descomente a linha abaixo:
+        this.arvores.clear();
+    }
+
+    public int getCameraX() {
+        return this.cameraX;
+    }
+
+    public void update(int playerWorldX, int screenWidth) {
+        // Zona morta: Onde a câmera começa a andar
+        int deadzone = screenWidth / 3; // Ou / 2, conforme seu gosto
+
+        // Lógica absoluta: Câmera é Player - Deadzone
+        if (playerWorldX > deadzone) {
+            this.cameraX = playerWorldX - deadzone;
+        } else {
+            this.cameraX = 0;
         }
     }
 }

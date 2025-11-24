@@ -1,47 +1,145 @@
 package Main;
 
+import Entity.EnemyFlying;
 import Entity.Player;
+import Entity.Enemy;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Random; // Import necessário
 
 public class GamePanel extends JPanel {
-    //ADICIONA O GAMEMAP AO GAMEPANEL
+
+    private boolean gameOver = false; // O jogo começa rodando (falso)
+
     private GameMap gameMap;
-    //ADICIONA O CAMERAX PARA ACOMPANHAR O JOGADOR DURANTE O JOGO
     private int cameraX = 0;
 
-    private boolean isPaused = false;
+    private ArrayList<Enemy> enemies;
+    private ArrayList<EnemyFlying> flyingEnemies;
+    private Player player;
 
-    public boolean isPaused() {
-        return isPaused;
-    }
-
-    public void setPaused(boolean paused) {
-        this.isPaused = paused;
-    }
-
+    // --- VARIÁVEIS DE GERAÇÃO DE INIMIGOS ---
+    private Random random;
+    private int tickCounter = 0; // Conta as atualizações do jogo
+    private int tempoParaProximoSpawn; // Quanto tempo falta para o próximo inimigo
 
     public static final int LARGURA_TELA = 1920;
     public static final int ALTURA_TELA = 1080;
 
-    private Player player;
-
     public GamePanel() {
-
         this.setPreferredSize(new Dimension(LARGURA_TELA, ALTURA_TELA));
         this.setBackground(Color.BLACK);
 
-        // RODA O MAPA PROPRIAMENTE DITO
         gameMap = new GameMap();
+        enemies = new ArrayList<>();
+        flyingEnemies = new ArrayList<>();
+
+        // Inicializa o gerador aleatório
+        random = new Random();
+        tempoParaProximoSpawn = 60; // Começa criando um inimigo em 1 segundo (60 ticks)
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void update() {
+        // 0. Se o jogo acabou, para tudo
+        if (gameOver) return;
 
-        // LIGA O PLAYER AO MAPA (ESSENCIAL)
-        gameMap.setPlayer(player);
+        // 1. ATUALIZA O PLAYER PRIMEIRO
+        // O player anda e define o novo WorldX
+        player.update();
+
+        // 2. ATUALIZA A CÂMERA DO MAPA
+        // A câmera segue o novo WorldX do player
+        gameMap.update(player.getWorldX(), getWidth());
+
+        // Pega a câmera atualizada para usar na limpeza de inimigos
+        int cameraAtual = gameMap.getCameraX();
+
+        // 3. ATUALIZA INIMIGOS TERRESTRES
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy e = enemies.get(i);
+            e.update();
+
+            // Remove se sair da tela (ficou pra trás)
+            if (e.getX() + e.getWidth() < cameraAtual - 100) {
+                enemies.remove(i);
+                i--;
+            }
+        }
+
+        // 4. ATUALIZA INIMIGOS VOADORES (NOVO)
+        // Precisamos atualizar a lista nova também!
+        for (int i = 0; i < flyingEnemies.size(); i++) {
+            EnemyFlying f = flyingEnemies.get(i);
+            f.update();
+
+            // Remove se sair da tela
+            if (f.getX() + f.getWidth() < cameraAtual - 100) {
+                flyingEnemies.remove(i);
+                i--;
+            }
+        }
+
+        // 5. LÓGICA DE SPAWN INTELIGENTE
+        tickCounter++;
+
+        if (tickCounter >= tempoParaProximoSpawn) {
+            // O spawnInimigo agora decide se cria chão ou voador (lógica dos 1000m)
+            spawnInimigo();
+            tickCounter = 0;
+
+            // --- CÁLCULO DINÂMICO DE TEMPO ---
+            int velocidadePlayer = player.getVelocidadeAtual();
+
+            if (velocidadePlayer <= 0) velocidadePlayer = 1;
+
+            // --- ALTERAÇÃO AQUI (Inimigos mais próximos) ---
+
+            // Antes era 500. Mudamos para 300 para eles ficarem mais colados.
+            // CUIDADO: Se diminuir muito (tipo 150), o jogador não terá espaço para cair do pulo.
+            int distanciaMinima = 300;
+
+            // Antes era 400. Mudamos para 200 para a aleatoriedade ser menor.
+            int variacao = random.nextInt(200);
+
+            // Fórmula: Tempo = Distância / Velocidade
+            tempoParaProximoSpawn = (distanciaMinima + variacao) / velocidadePlayer;
+        }
+
+        // 6. CHECA TODAS AS COLISÕES
+        checkColisao();
     }
+
+
+    private void spawnInimigo() {
+        int cameraAtual = gameMap.getCameraX();
+        int spawnX = cameraAtual + LARGURA_TELA + 100; // Nasce fora da tela
+
+        // 1. Calcula a distância atual em metros
+        int metrosPercorridos = player.getWorldX() / 20;
+
+        // 2. Decide se vai criar um Voador ou Terrestre
+        // Regra: Só cria voador se passou de 1000m E o dado cair num número par (50% chance)
+        boolean criarVoador = (metrosPercorridos >= 1000) && (random.nextBoolean());
+
+        if (criarVoador) {
+            // ALTURA DO VOADOR:
+            // Ele deve passar por CIMA da cabeça do player quando ele está no chão.
+            // Chão ~ 800. Player Altura ~ 128. Cabeça ~ 672.
+            // Vamos colocar em 600 para obrigar o player a ficar no chão (ou pular com cuidado).
+            int alturaVoador = 600;
+
+            flyingEnemies.add(new EnemyFlying(spawnX, alturaVoador));
+
+        } else {
+            // LÓGICA ANTIGA (Inimigo de Chão)
+            int chaoY = 800 + (128 - 64); // Ajuste conforme seu chão fixo
+            enemies.add(new Enemy(spawnX, chaoY));
+        }
+    }
+
+    // --- MÉTODOS PADRÃO (JÁ EXISTENTES) ---
 
     public void moveCamera(int amount) {
         cameraX += amount;
@@ -51,65 +149,168 @@ public class GamePanel extends JPanel {
         return cameraX;
     }
 
-    @Override
+    public void setPlayer(Player player) {
+        this.player = player;
+        gameMap.setPlayer(player);
+    }
+
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (player == null) {
-            return;
-        }
+        // Segurança inicial: Se o player não existe, não desenha nada para evitar erro
+        if (player == null) return;
 
-        // PARALLEX DO MAPA
+        // Pega a câmera OFICIAL do mapa (sincronizada)
+        int camX = gameMap.getCameraX();
+
+        // ============================================================
+        // 1. CAMADA DO FUNDO (MAPA)
+        // ============================================================
         gameMap.draw((Graphics2D) g, getWidth(), getHeight(), player);
 
-        // --- Desenha timer ---
+        // ============================================================
+        // 2. CAMADA DOS INIMIGOS (SPRITES)
+        // ============================================================
+        for (Enemy enemy : enemies) {
+            enemy.draw(g, camX);
+        }
+
+        // ============================================================
+        // 3. CAMADA DA INTERFACE (UI) - TIMER E PONTUAÇÃO
+        // ============================================================
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 24));
+
+        // --- A. Timer (Tempo de Jogo) ---
         double gameTime = player.getGameTime();
         String timeString = String.format("Tempo: %.2f", gameTime);
+        g.drawString(timeString, 20, 30); // Y = 30
 
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 24));
-        g.drawString(timeString, 20, 30);
+        // --- B. Pontuação por Distância ---
+        // Divide o WorldX por 20 para transformar pixels em "metros" fictícios
+        int distancia = player.getWorldX() / 20;
+        String scoreString = "Distância: " + distancia + "m";
 
-        // --- Desenha o jogador ---
+        // Desenha logo abaixo do timer (Y = 60)
+        g.drawString(scoreString, 20, 60);
+
+        // ============================================================
+        // 4. CAMADA DO JOGADOR (SPRITE)
+        // ============================================================
         if (player.getSprite() != null) {
+            // A MÁGICA: Calculamos a posição na tela AGORA (World - Camera)
+            int screenX = player.getWorldX() - camX;
+
             g.drawImage(
                     player.getSprite(),
-                    player.getPlayerX(),
+                    screenX,
                     player.getPlayerY(),
                     128,
                     128,
                     null
             );
         }
-        //Desenha o MENU DE PAUSE por cima de tudo ---
-        if (isPaused) {
-            drawPauseScreen((Graphics2D) g);
+
+        // ============================================================
+        // 5. MODO DEBUG (VISUALIZAR HITBOXES)
+        // ============================================================
+
+        // --- A. Debug do Player (VERMELHO) ---
+        g.setColor(Color.RED);
+
+        // Pega a caixa oficial (que usa WorldX)
+        Rectangle hitbox = player.getBounds();
+
+        // Converte Mundo -> Tela para desenhar a linha no lugar certo
+        int drawX = hitbox.x - camX;
+        int drawY = hitbox.y;
+
+        g.drawRect(drawX, drawY, hitbox.width, hitbox.height);
+
+        // --- B. Debug dos Inimigos (AMARELO) --- <--- ADICIONADO AGORA
+        g.setColor(Color.YELLOW);
+
+        for (Enemy enemy : enemies) {
+            Rectangle eRect = enemy.getBounds();
+
+            // Converte Mundo -> Tela
+            int eDrawX = eRect.x - camX;
+            int eDrawY = eRect.y;
+
+            g.drawRect(eDrawX, eDrawY, eRect.width, eRect.height);
+        }
+
+        // NOVO: Desenha Inimigos Voadores
+        for (EnemyFlying f : flyingEnemies) {
+            f.draw(g, camX);
+        }
+
+        // NOVO: Debug Amarelo para Voadores (Opcional)
+        g.setColor(Color.YELLOW);
+        for (EnemyFlying f : flyingEnemies) {
+            Rectangle r = f.getBounds();
+            g.drawRect(r.x - camX, r.y, r.width, r.height);
+        }
+
+        // ============================================================
+        // 6. TELA DE GAME OVER (OVERLAY)
+        // ============================================================
+        if (gameOver) {
+            // Escurece a tela levemente (efeito transparente)
+            g.setColor(new Color(0, 0, 0, 150));
+            g.fillRect(0, 0, LARGURA_TELA, ALTURA_TELA);
+
+            // Texto Vermelho
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial", Font.BOLD, 100));
+            String msg = "GAME OVER";
+
+            // Centraliza o texto (cálculo simples)
+            int textWidth = g.getFontMetrics().stringWidth(msg);
+            g.drawString(msg, (LARGURA_TELA / 2) - (textWidth / 2), ALTURA_TELA / 2);
         }
     }
-    //Método visual do Pause ---
 
-    private void drawPauseScreen(Graphics2D g2) {
-        // Fundo Preto Transparente (O 4º número é a transparência 0-255)
-        g2.setColor(new Color(0, 0, 0, 150));
-        g2.fillRect(0, 0, getWidth(), getHeight());
+    private void checkColisao() {
+        Rectangle playerRect = player.getBounds();
 
-        // Configura Texto
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Arial", Font.BOLD, 100));
+        // 1. Checa Chão (Já existe)
+        for (Enemy enemy : enemies) {
+            if (playerRect.intersects(enemy.getBounds())) {
+                gameOver = true;
+            }
+        }
 
-        String text = "PAUSADO";
+        // 2. NOVO: Checa Voadores
+        for (EnemyFlying f : flyingEnemies) {
+            if (playerRect.intersects(f.getBounds())) {
+                System.out.println("Bateu no pássaro!");
+                gameOver = true;
+            }
+        }
+    }
 
-        // Centraliza o Texto na tela matematicamente
-        FontMetrics metrics = g2.getFontMetrics();
-        int x = (getWidth() - metrics.stringWidth(text)) / 2;
-        int y = getHeight() / 2;
+    // Em GamePanel.java
+    public boolean isGameOver() {
+        return gameOver;
+    }
 
-        g2.drawString(text, x, y);
 
-        // Texto menor de instrução
-        g2.setFont(new Font("Arial", Font.PLAIN, 40));
-        String subText = "Pressione ESC para voltar";
-        x = (getWidth() - g2.getFontMetrics().stringWidth(subText)) / 2;
-        g2.drawString(subText, x, y + 80);
+    // Em GamePanel.java
+    public void resetGame() {
+        enemies.clear();
+        flyingEnemies.clear(); // <--- Adicione isso
+        // ... resto do reset
+
+        // Zera variáveis locais
+        cameraX = 0;
+        tickCounter = 0;
+        gameOver = false;
+
+        // Zera o Player
+        player.resetTimer();
+
+        // --- AQUI ESTÁ A MUDANÇA: ---
+        gameMap.reset(); // Chama o método novo que criamos agora
     }
 }
