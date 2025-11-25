@@ -293,10 +293,11 @@ public class Player {
         // 2. Toca o som de morte
         // Nota: Se você criou o método 'playSound' (sem loop) que sugeri antes, use ele aqui.
         // Caso contrário, use playBackgroundMusic mesmo.
-        AudioManager.playGameOverMusic("death.wav");
+        AudioManager.playGameOverMusic("death.mp4");
 
         // 3. Reseta o jogo (você já tem esse método)
 
     }
+
 
 }
