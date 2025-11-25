@@ -80,7 +80,7 @@ git clone https://github.com/AndersonJJR/Game.git
   <tr>
     <td align="center">
       <a href="(https://www.linkedin.com/in/yasmim-lessafelix-0b5b64302?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app)">
-        <img src="https://media.licdn.com/dms/image/v2/D4D35AQGjchSrqe7wCA/profile-framedphoto-shrink_400_400/B4DZkSoyiUH4Ao-/0/1756954307116?e=1764716400&v=beta&t=WZL-V2s6oNSSGe19eQKhmoCKIMaxBQcUf3R8XtvB-Cs" width="100px;" alt="Foto do Membro 4"/><br>
+        <img src="https://media.licdn.com/dms/image/v2/D4D03AQHU92kewo8i8g/profile-displayphoto-scale_400_400/B4DZkSox.YIEAw-/0/1756954306151?e=1765411200&v=beta&t=ORThDFk-txMxrPVSno6DJvwrin4SFnBauo5JImkz5Cw" width="100px;" alt="Foto do Membro 4"/><br>
         <sub>
           <b>Yasmim Camilly</b>
         </sub>
