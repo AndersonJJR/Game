@@ -1,6 +1,5 @@
 package audio;
 
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -11,7 +10,8 @@ public class SoundEffect {
 
     public static void play(String fileName) {
         try {
-            InputStream audioSrc = SoundEffect.class.getResourceAsStream("/res/audio/" + fileName);
+            // Caminho atualizado (res_audio/audio/)
+            InputStream audioSrc = SoundEffect.class.getResourceAsStream("/audio/" + fileName);
 
             if (audioSrc == null) {
                 System.out.println("Som não encontrado: " + fileName);
@@ -23,13 +23,18 @@ public class SoundEffect {
 
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
-            //aumentar volume
-            FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            volume.setValue(6.0f);
+
+            // Aumentar volume
+            try {
+                FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                volume.setValue(6.0f); // aumento de volume
+            } catch (Exception e) {
+                System.out.println("Controle de volume não suportado.");
+            }
 
             clip.start();
 
-            // AGUARDAR O SOM TERMINAR
+            // Espera o som terminar
             while (clip.isRunning()) {
                 Thread.sleep(50);
             }
@@ -39,5 +44,6 @@ public class SoundEffect {
         }
     }
 }
+
 
 

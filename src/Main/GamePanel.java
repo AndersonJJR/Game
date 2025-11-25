@@ -278,6 +278,7 @@ public class GamePanel extends JPanel {
         for (Enemy enemy : enemies) {
             if (playerRect.intersects(enemy.getBounds())) {
                 gameOver = true;
+                audio.SoundEffect.play("death.wav"); // <<< SOM DE MORTE
             }
         }
 
@@ -286,6 +287,7 @@ public class GamePanel extends JPanel {
             if (playerRect.intersects(f.getBounds())) {
                 System.out.println("Bateu no pássaro!");
                 gameOver = true;
+                audio.SoundEffect.play("death.wav"); // <<< SOM DE MORTE
             }
         }
     }

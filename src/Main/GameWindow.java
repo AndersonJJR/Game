@@ -16,6 +16,7 @@ public class GameWindow extends JFrame {
     private GamePanel gamePanel;
     private LoginPanel loginPanel;
 
+
 //DA LINHA 20 ATÉ A LINHA 56 SEM FULLSREEN
     public GameWindow() {
         // 1. Configuração da Janela (JFrame)
@@ -113,6 +114,13 @@ public class GameWindow extends JFrame {
      */
     public void startGame(int playerID) {
         // 1. Cria os componentes do jogo
+
+        // >>>>>>> PARAR O MENU E TOCAR MÚSICA DA FASE <<<<<<<<
+        audio.AudioManager.stopBackgroundMusic();
+        audio.AudioManager.playBackgroundMusic("1-fase.wav");
+        // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
         gamePanel = new GamePanel();
         gameEngine = new GameEngine(gamePanel, playerID);
 

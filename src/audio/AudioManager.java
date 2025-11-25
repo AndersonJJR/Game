@@ -1,6 +1,5 @@
 package audio;
 
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -13,7 +12,8 @@ public class AudioManager {
     // Tocar música de fundo (menu ou fase)
     public static void playBackgroundMusic(String fileName) {
         try {
-            InputStream audioSrc = AudioManager.class.getResourceAsStream("/res/audio/" + fileName);
+            // Caminho atualizado: res_audio/audio/
+            InputStream audioSrc = AudioManager.class.getResourceAsStream("/audio/" + fileName);
 
             if (audioSrc == null) {
                 System.out.println("Música não encontrada: " + fileName);

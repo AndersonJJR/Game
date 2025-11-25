@@ -28,6 +28,8 @@ public class LoginPanel extends JPanel {
         this.CeuImg = loadCeuImg();
         this.gameFont = loadCustomFont("VT323-Regular.ttf");
 
+        audio.AudioManager.playBackgroundMusic("menu_loop.wav");
+
         // 2. Define o layout principal
         this.setLayout(new GridBagLayout());
 
