@@ -69,10 +69,10 @@ git clone https://github.com/AndersonJJR/Game.git
       </a>
     </td>
     <td align="center">
-      <a href="URL_DO_LINKEDIN_OU_GITHUB_AQUI">
-        <img src="https://avatars.githubusercontent.com/u/00000000?v=4" width="100px;" alt="Foto do Membro 3"/><br>
+      <a href="https://www.linkedin.com/in/marcos-a-godinho/">
+        <img src="https://media.licdn.com/dms/image/v2/D4D03AQHom8kMSh_jMg/profile-displayphoto-shrink_200_200/B4DZX8w2UTH4Ag-/0/1743702419609?e=1765411200&v=beta&t=4STYFoU9COU1y8iiKRU3JdLJvmcJ3NhfApyw8F8fxPQ" width="100px;" alt="Foto do Membro 3"/><br>
         <sub>
-          <b>Nome do Membro 3</b>
+          <b>Marcos Godinho</b>
         </sub>
       </a>
     </td>
