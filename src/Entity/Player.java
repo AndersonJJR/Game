@@ -1,5 +1,6 @@
 package Entity;
 
+import audio.AudioManager;
 import Input.KeyInputs;
 import Main.GameEngine;
 import Main.GamePanel;
@@ -279,6 +280,23 @@ public class Player {
         // Retorna a velocidade que calculamos no passo anterior
         // Se a variável for privada, certifique-se de que ela existe na classe
         return this.velocidadeAtual;
+    }
+
+    // ====================================================================
+    // LÓGICA DE MORTE E SOM
+    // ====================================================================
+
+    public void checkDeath() {
+        // 1. Para a música da fase imediatamente
+        AudioManager.stopBackgroundMusic();
+
+        // 2. Toca o som de morte
+        // Nota: Se você criou o método 'playSound' (sem loop) que sugeri antes, use ele aqui.
+        // Caso contrário, use playBackgroundMusic mesmo.
+        AudioManager.playGameOverMusic("death.wav");
+
+        // 3. Reseta o jogo (você já tem esse método)
+
     }
 
 }
