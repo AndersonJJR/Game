@@ -21,7 +21,7 @@ public class GameMap {
     //=============================DECLARAÇÃO DAS IMAGENS=============================
     private BufferedImage CeuImg;
     private BufferedImage NuvemImg1;
-    private BufferedImage NuvemImg2;
+    //private BufferedImage NuvemImg2;
     private BufferedImage GramaImg;
     private BufferedImage ArvoreImg;
 
@@ -29,12 +29,12 @@ public class GameMap {
     private BufferedImage ArvoreEscalada;
     private BufferedImage EscalaCeu;
     private BufferedImage EscalaNuvemLonge1, EscalaNuvemMedia1, EscalaNuvemPerto1;
-    private BufferedImage EscalaNuvemLonge2, EscalaNuvemMedia2, EscalaNuvemPerto2;
+    //private BufferedImage EscalaNuvemLonge2, EscalaNuvemMedia2, EscalaNuvemPerto2;
     private BufferedImage EscalaGrama;
 
     // =============================DECLARAÇÃO DAS CAMADAS PARALLAX=============================
     private ParallaxLayer NuvensLonge1, NuvensMedia1, NuvensPerto1;
-    private ParallaxLayer NuvensLonge2, NuvensMedia2, NuvensPerto2;
+    //private ParallaxLayer NuvensLonge2, NuvensMedia2, NuvensPerto2;
     private ParallaxLayer camadaGrama;
 
     //=============================ALTURA DO CHÃO=============================
@@ -48,7 +48,7 @@ public class GameMap {
     private int lastH = -1;
 
     //=============================GERAÇÃO DE ÁRVORES ALEATÓRIAS=============================
-    private class Arvore {
+    /*private class Arvore {
         int x;
         int y;
         public Arvore(int x, int y) {
@@ -58,17 +58,19 @@ public class GameMap {
     }
     private java.util.List<Arvore> arvores = new java.util.ArrayList<>();
     private java.util.Random random = new java.util.Random();
+    */
 //=============================COMEÇO DO CONSTRUTOR=============================
     public GameMap() {
         //=============================CARREGAMENTO DAS IMAGENS=============================
         try { CeuImg = ImageIO.read(getClass().getResourceAsStream("/res/CEU.jpg")); } catch (Exception ignored) {}
         try { NuvemImg1 = ImageIO.read(getClass().getResourceAsStream("/res/NUVEM.png")); } catch (Exception ignored) {}
-        try { NuvemImg2 = ImageIO.read(getClass().getResourceAsStream("/res/NUVEMDOIS.png")); } catch (Exception ignored) {}
+        //try { NuvemImg2 = ImageIO.read(getClass().getResourceAsStream("/res/NUVEMDOIS.png")); } catch (Exception ignored) {}
         try { GramaImg = ImageIO.read(getClass().getResourceAsStream("/res/GRAMAPIXEL.png")); } catch (Exception ignored) {}
         try { ArvoreImg = ImageIO.read(getClass().getResourceAsStream("/res/ARVORE.png")); } catch (Exception ignored) {}
 
     }
     // =============================GERAR ÁRVORES ALEATÓRIAS=============================
+
     private void gerarArvores(int quantidade, int mapStart, int mapEnd, int groundY) {
 
         int spacing = 300; // =============================DISTANCIA MÍNIMA ENTRE AS ÁRVORES=============================
@@ -79,7 +81,7 @@ public class GameMap {
             boolean valido;
 
             // =============================GERA AS ARVORES DE ACORDO COM O ESPAÇAMENTO=============================
-            do {
+            /*do {
                 valido = true;
                 x = random.nextInt(mapEnd - mapStart) + mapStart;
 
@@ -92,6 +94,8 @@ public class GameMap {
 
             } while (!valido);
 
+             */
+
             // =============================ALTURA DA ARVORE=============================
             int treeHeight = (ArvoreEscalada != null ? ArvoreEscalada.getHeight() : 150);
 
@@ -99,7 +103,7 @@ public class GameMap {
             int y = groundY - treeHeight + 50;
 
             // =============================ADICIONA A ARVORE PROPRIAMENTE DITA=============================
-            arvores.add(new Arvore(x, y));
+            //arvores.add(new Arvore(x, y));
         }
     }
 //=============================SETA O PLAYER=============================
@@ -139,11 +143,12 @@ public class GameMap {
         if (NuvensPerto1 != null) NuvensPerto1.drawTiled(g, width, height, cameraX);
 
         // Nuvens conjunto 2
-        if (NuvensLonge2 != null) NuvensLonge2.drawTiled(g, width, height, cameraX);
+        /*if (NuvensLonge2 != null) NuvensLonge2.drawTiled(g, width, height, cameraX);
         if (NuvensMedia2 != null) NuvensMedia2.drawTiled(g, width, height, cameraX);
         if (NuvensPerto2 != null) NuvensPerto2.drawTiled(g, width, height, cameraX);
-
+            */
         // ============================= DESENHAR ÁRVORES =============================
+       /*
         if (ArvoreEscalada != null) {
             for (Arvore a : arvores) {
                 int telaX = a.x - cameraX; // converter worldX → screenX
@@ -152,6 +157,8 @@ public class GameMap {
                 }
             }
         }
+        */
+
         // ============================= DESENHAR GRAMA / CHÃO =============================
         int groundY = height - plataformaAltura;
         if (camadaGrama != null) camadaGrama.drawLine(g, width, groundY, cameraX);
@@ -187,7 +194,7 @@ public class GameMap {
         }
 
         // Nuvens conjunto 2
-        if (NuvemImg2 != null) {
+        /*if (NuvemImg2 != null) {
 
             int cloudH = h / 1;
 
@@ -198,7 +205,7 @@ public class GameMap {
             NuvensLonge2 = new ParallaxLayer(EscalaNuvemLonge2, 0.10, 40, 0);
             NuvensMedia2 = new ParallaxLayer(EscalaNuvemMedia2, 0.30, 80, 0);
             NuvensPerto2 = new ParallaxLayer(EscalaNuvemPerto2, 0.50, 120, 0);
-        }
+        }*/
 
         // Grama / chão
         if (GramaImg != null) {
@@ -211,10 +218,10 @@ public class GameMap {
             ArvoreEscalada = resizeByHeight(ArvoreImg, arvAlt);
         }
         //Gera apenas 1 arvore
-        if (arvores.isEmpty()) {
+        /*if (arvores.isEmpty()) {
             int groundY = h - plataformaAltura;
             gerarArvores(40, 0, 5000, groundY);
-        }
+        }*/
     }
 
     // ============================================================
@@ -287,7 +294,7 @@ public class GameMap {
         this.cameraX = 0;
 
         // Se você quiser gerar árvores novas toda vez que morrer, descomente a linha abaixo:
-        this.arvores.clear();
+        //this.arvores.clear();
     }
 
     public int getCameraX() {
