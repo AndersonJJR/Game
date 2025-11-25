@@ -54,7 +54,7 @@ git clone https://github.com/AndersonJJR/Game.git
   <tr>
     <td align="center">
       <a href="https://www.linkedin.com/in/andersonchavesjunior/">
-        <img src="/images/1761921712659.jpg" width="100px;" alt="Foto do Membro 1"/><br>
+        <img src="https://media.licdn.com/dms/image/v2/D5603AQFaKLpTsMOtAg/profile-displayphoto-scale_400_400/B56ZiUyQ2AHcAg-/0/1754842862730?e=1765411200&v=beta&t=SbtRPPqJwjInpw56q1ntswlkFiXc8CSW_5ep_t3-CLU" width="100px;" alt="Foto do Membro 1"/><br>
         <sub>
           <b>Anderson Júnior</b>
         </sub>
