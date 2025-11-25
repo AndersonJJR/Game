@@ -222,6 +222,8 @@ public class GamePanel extends JPanel {
             );
         }
 
+        /*
+
         // ============================================================
         // 5. MODO DEBUG (VISUALIZAR HITBOXES)
         // ============================================================
@@ -250,18 +252,22 @@ public class GamePanel extends JPanel {
 
             g.drawRect(eDrawX, eDrawY, eRect.width, eRect.height);
         }
+        */
 
         // NOVO: Desenha Inimigos Voadores
         for (EnemyFlying f : flyingEnemies) {
             f.draw(g, camX);
         }
 
+        /*
         // NOVO: Debug Amarelo para Voadores (Opcional)
         g.setColor(Color.YELLOW);
         for (EnemyFlying f : flyingEnemies) {
             Rectangle r = f.getBounds();
             g.drawRect(r.x - camX, r.y, r.width, r.height);
         }
+        */
+
 
         // ============================================================
         // 6. TELA DE GAME OVER (OVERLAY)
