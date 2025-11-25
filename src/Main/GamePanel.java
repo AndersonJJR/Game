@@ -66,6 +66,17 @@ public class GamePanel extends JPanel {
                 enemies.remove(i);
                 i--;
             }
+
+            for (Enemy enemy : enemies) {
+                enemy.update();
+
+                // VERIFICA SE O PLAYER BATEU NO INIMIGO
+                if (player.getBounds().intersects(enemy.getBounds())) {
+
+                    // Chama o método que criamos no Player
+                    player.checkDeath();
+                }
+            }
         }
 
         // 4. ATUALIZA INIMIGOS VOADORES (NOVO)
