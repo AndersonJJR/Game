@@ -1,14 +1,4 @@
 package Main;
-/* O QUE FALTA FAZER - MATHEUS
-1- COLOCAR OS ARBUSTOS
-2- COLOCAR OS ARBUSTOS DE ESPINHO
-3- ADICIONAR OS BURACOS
-4- ADICIONAR O FINAL DO MAPA COM UMA CASINHA DO GATO FINALIZANDO ASSIM O GAME
-5- ADICIONAR A CONTAGEM DE TEMPO NA TELA
-6- ADICIONAR A VIDA DO PERSONAGEM
-7- ADICIONAR INIMIGOS
-* */
-
 // ============================= IMPORTAÇÕES =============================
 import Entity.Player;
 import javax.imageio.ImageIO;
@@ -97,10 +87,10 @@ public class GameMap {
              */
 
             // =============================ALTURA DA ARVORE=============================
-            int treeHeight = (ArvoreEscalada != null ? ArvoreEscalada.getHeight() : 150);
+            //int treeHeight = (ArvoreEscalada != null ? ArvoreEscalada.getHeight() : 150);
 
             // =============================DEIXA A ARVORE PERTO DO CHAO=============================
-            int y = groundY - treeHeight + 50;
+            //int y = groundY - treeHeight + 50;
 
             // =============================ADICIONA A ARVORE PROPRIAMENTE DITA=============================
             //arvores.add(new Arvore(x, y));
@@ -133,20 +123,11 @@ public class GameMap {
             g.fillRect(0, 0, width, height);
         }
 
-        // =============================ATUALIZA A CAMERA=============================
-
-
         // =============================CONJUNTO DE NUVEM PARA PARALLAX=============================
         // Nuvens conjunto 1
         if (NuvensLonge1 != null) NuvensLonge1.drawTiled(g, width, height, (int)cameraX);
         if (NuvensMedia1 != null) NuvensMedia1.drawTiled(g, width, height, (int)cameraX);
         if (NuvensPerto1 != null) NuvensPerto1.drawTiled(g, width, height, (int)cameraX);
-
-        // Nuvens conjunto 2
-        /*if (NuvensLonge2 != null) NuvensLonge2.drawTiled(g, width, height, cameraX);
-        if (NuvensMedia2 != null) NuvensMedia2.drawTiled(g, width, height, cameraX);
-        if (NuvensPerto2 != null) NuvensPerto2.drawTiled(g, width, height, cameraX);
-            */
         // ============================= DESENHAR ÁRVORES =============================
        /*
         if (ArvoreEscalada != null) {
@@ -164,11 +145,6 @@ public class GameMap {
         if (camadaGrama != null) camadaGrama.drawLine(g, width, groundY, (int)cameraX);
 
     }
-
-    // ============================================================
-    // CÂMERA DO JOGO
-    // ============================================================
-
     // ============================================================
     // REESCALAR IMAGENS
     // ============================================================
@@ -192,21 +168,6 @@ public class GameMap {
             NuvensMedia1 = new ParallaxLayer(EscalaNuvemMedia1, 0.35, 50, 0);
             NuvensPerto1 = new ParallaxLayer(EscalaNuvemPerto1, 0.55, 80, 0);
         }
-
-        // Nuvens conjunto 2
-        /*if (NuvemImg2 != null) {
-
-            int cloudH = h / 1;
-
-            EscalaNuvemLonge2 = resizeByHeight(NuvemImg2, cloudH);
-            EscalaNuvemMedia2 = resizeByHeight(NuvemImg2, cloudH);
-            EscalaNuvemPerto2 = resizeByHeight(NuvemImg2, cloudH);
-
-            NuvensLonge2 = new ParallaxLayer(EscalaNuvemLonge2, 0.10, 40, 0);
-            NuvensMedia2 = new ParallaxLayer(EscalaNuvemMedia2, 0.30, 80, 0);
-            NuvensPerto2 = new ParallaxLayer(EscalaNuvemPerto2, 0.50, 120, 0);
-        }*/
-
         // Grama / chão
         if (GramaImg != null) {
             EscalaGrama = resizeByHeight(GramaImg, plataformaAltura);
@@ -288,15 +249,6 @@ public class GameMap {
                 g.drawImage(img, x, y, null);
         }
     }
-
-    public void reset() {
-        // Zera a câmera para o início do jogo
-        this.cameraX = 0;
-
-        // Se você quiser gerar árvores novas toda vez que morrer, descomente a linha abaixo:
-        //this.arvores.clear();
-    }
-
     public int getCameraX() {
         return (int) this.cameraX;
     }
