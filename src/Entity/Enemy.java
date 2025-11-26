@@ -73,8 +73,6 @@ public class Enemy {
             g.setColor(Color.RED);
             g.fillRect(screenX, y, width, height);
         }
-
-        // O ERRO ESTAVA AQUI: Havia uma chave "}" extra fechando a classe cedo demais.
     }
 
     public Rectangle getBounds() {
