@@ -109,9 +109,6 @@ public class GamePanel extends JPanel {
             int distanciaMinima = 250;
 
             // 2. Variação (O Segredo da Aleatoriedade):
-            // Aumentei de 200 para 900.
-            // Isso significa que o próximo inimigo pode vir logo em seguida (+0m)
-            // ou demorar muito para aparecer (+900 "pixels" de distância).
             int variacao = random.nextInt(400);
 
             // Fórmula: Tempo = Distância / Velocidade
@@ -149,7 +146,6 @@ public class GamePanel extends JPanel {
         } else {
             // INIMIGO DE CHÃO
             // Adicionei uma pequena variação no chão também (opcional)
-            // Para não ficarem parecendo robôs perfeitos
             // Variação de -10 a +10 pixels no eixo X do spawn
             int variacaoX = random.nextInt(20) - 10;
 
@@ -157,9 +153,6 @@ public class GamePanel extends JPanel {
             enemies.add(new Enemy(spawnX + variacaoX, chaoY));
         }
     }
-
-    // --- MÉTODOS PADRÃO (JÁ EXISTENTES) ---
-
     public void moveCamera(int amount) {
         cameraX += amount;
     }
@@ -317,8 +310,9 @@ public class GamePanel extends JPanel {
         }
     }
 
-    // Método para declarar que o jogo acabou
+    // Em GamePanel.java
     public boolean isGameOver() {
         return gameOver;
     }
+
 }
