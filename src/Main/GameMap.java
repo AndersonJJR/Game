@@ -303,7 +303,7 @@ public class GameMap {
 
     public void update(int playerWorldX, int screenWidth) {
         // Zona morta: Onde a câmera começa a andar
-        int deadzone = screenWidth / 3; // Ou / 2, conforme seu gosto
+        int deadzone = screenWidth / 4; // Ou / 2, conforme seu gosto
         double targetX = 0;
 
         if (playerWorldX > deadzone) {
