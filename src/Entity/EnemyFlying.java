@@ -29,7 +29,7 @@ public class EnemyFlying {
         animationFrames = new BufferedImage[qtdQuadros];
         for (int i = 0; i < qtdQuadros; i++) {
             try {
-                // Certifique-se de ter imagens tipo "bird_0.png", "bird_1.png" na pasta res
+                // Certifique-se de ter imagens tipo "bat_0.png", "bat_1.png" na pasta res
                 String nomeArquivo = "/res/bat_" + i + ".png";
                 InputStream is = getClass().getResourceAsStream(nomeArquivo);
 
