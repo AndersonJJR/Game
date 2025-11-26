@@ -96,23 +96,23 @@ public class GamePanel extends JPanel {
         tickCounter++;
 
         if (tickCounter >= tempoParaProximoSpawn) {
-            // O spawnInimigo agora decide se cria chão ou voador (lógica dos 1000m)
             spawnInimigo();
-            tickCounter = 0;
+            tickCounter = 0; // Reseta o contador
 
-            // --- CÁLCULO DINÂMICO DE TEMPO ---
+            // --- CÁLCULO DINÂMICO DE TEMPO (VERSÃO MAIS ALEATÓRIA) ---
             int velocidadePlayer = player.getVelocidadeAtual();
-
             if (velocidadePlayer <= 0) velocidadePlayer = 1;
 
-            // --- ALTERAÇÃO AQUI (Inimigos mais próximos) ---
+            // 1. Distância Mínima:
+            // Reduzi para 250. Isso permite que inimigos venham mais perto um do outro,
+            // exigindo reflexos mais rápidos do jogador.
+            int distanciaMinima = 250;
 
-            // Antes era 500. Mudamos para 300 para eles ficarem mais colados.
-            // CUIDADO: Se diminuir muito (tipo 150), o jogador não terá espaço para cair do pulo.
-            int distanciaMinima = 300;
-
-            // Antes era 400. Mudamos para 200 para a aleatoriedade ser menor.
-            int variacao = random.nextInt(200);
+            // 2. Variação (O Segredo da Aleatoriedade):
+            // Aumentei de 200 para 900.
+            // Isso significa que o próximo inimigo pode vir logo em seguida (+0m)
+            // ou demorar muito para aparecer (+900 "pixels" de distância).
+            int variacao = random.nextInt(400);
 
             // Fórmula: Tempo = Distância / Velocidade
             tempoParaProximoSpawn = (distanciaMinima + variacao) / velocidadePlayer;
@@ -130,23 +130,31 @@ public class GamePanel extends JPanel {
         // 1. Calcula a distância atual em metros
         int metrosPercorridos = player.getWorldX() / 20;
 
-        // 2. Decide se vai criar um Voador ou Terrestre
-        // Regra: Só cria voador se passou de 1000m E o dado cair num número par (50% chance)
-        boolean criarVoador = (metrosPercorridos >= 1000) && (random.nextBoolean());
+        // 2. Decide se vai criar um Voador
+        // Regra Aprimorada:
+        // - Se passou de 1000m: 50% de chance (random.nextBoolean())
+        // - Se for menos de 1000m: 10% de chance surpresa (random.nextInt(100) < 10)
+        boolean chanceNormal = (metrosPercorridos >= 1000) && random.nextBoolean();
+        boolean chanceSurpresa = (metrosPercorridos > 200) && (random.nextInt(100) < 10); // Raro, mas possível
+
+        boolean criarVoador = chanceNormal || chanceSurpresa;
 
         if (criarVoador) {
-            // ALTURA DO VOADOR:
-            // Ele deve passar por CIMA da cabeça do player quando ele está no chão.
-            // Chão ~ 800. Player Altura ~ 128. Cabeça ~ 672.
-            // Vamos colocar em 600 para obrigar o player a ficar no chão (ou pular com cuidado).
-            int alturaVoador = 600;
+            // ALTURA ALEATÓRIA (entre 600 e 700)
+            int min = 600;
+            int max = 700;
+            int alturaVoador = min + random.nextInt(max - min + 1);
 
             flyingEnemies.add(new EnemyFlying(spawnX, alturaVoador));
-
         } else {
-            // LÓGICA ANTIGA (Inimigo de Chão)
-            int chaoY = 800 + (128 - 64); // Ajuste conforme seu chão fixo
-            enemies.add(new Enemy(spawnX, chaoY));
+            // INIMIGO DE CHÃO
+            // Adicionei uma pequena variação no chão também (opcional)
+            // Para não ficarem parecendo robôs perfeitos
+            // Variação de -10 a +10 pixels no eixo X do spawn
+            int variacaoX = random.nextInt(20) - 10;
+
+            int chaoY = 800 + (128 - 64);
+            enemies.add(new Enemy(spawnX + variacaoX, chaoY));
         }
     }
 
