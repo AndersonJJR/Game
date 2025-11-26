@@ -317,27 +317,8 @@ public class GamePanel extends JPanel {
         }
     }
 
-    // Em GamePanel.java
+    // Método para declarar que o jogo acabou
     public boolean isGameOver() {
         return gameOver;
-    }
-
-
-    // Em GamePanel.java
-    public void resetGame() {
-        enemies.clear();
-        flyingEnemies.clear(); // <--- Adicione isso
-        // ... resto do reset
-
-        // Zera variáveis locais
-        cameraX = 0;
-        tickCounter = 0;
-        gameOver = false;
-
-        // Zera o Player
-        player.resetTimer();
-
-        // --- AQUI ESTÁ A MUDANÇA: ---
-        gameMap.reset(); // Chama o método novo que criamos agora
     }
 }
