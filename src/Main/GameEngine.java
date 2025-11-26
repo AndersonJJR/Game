@@ -105,60 +105,77 @@ public class GameEngine extends Canvas implements Runnable {
         }
     }
 
-    @Override
     public void run() {
-        // Usa o tempo de alta complexidade do sistema (nanosegundos)
         long lastTime = System.nanoTime();
         double timeAccumulator = 0.0;
 
-        //Contadores para debugar
+        // Variáveis para controle do frame (Capping)
+        long frameStartTime;
+        long frameDrawTime;
+        long timeToSleep;
+
+        // --- Variáveis para o Contador de FPS/UPS ---
         long timer = System.currentTimeMillis();
         int frames = 0;
         int updates = 0;
 
         while (running) {
+            frameStartTime = System.nanoTime(); // Marca o início do frame
+
             long now = System.nanoTime();
-            // Calcula o tempo que passou desde a última verificação em segundos
             double elapsedTime = (now - lastTime) / 1000000000.0;
             lastTime = now;
 
-            // --- MODIFICAÇÃO AQUI ---
-            // Só adiciona tempo ao cronômetro se o jogo NÃO estiver travado no Game Over
+            // Só conta o tempo de jogo se não for Game Over
             if (!gamePanel.isGameOver()) {
                 elapsedGameTimeSeconds += elapsedTime;
             }
-            //Adiciona o tempo decorrido ao acumulador
             timeAccumulator += elapsedTime;
 
-
-            // Lógica de atulização usando o Fixed Timestep
+            // Loop de Física (UPS travado em 60)
             while (timeAccumulator >= SECONDS_PER_UPDATE) {
                 update(SECONDS_PER_UPDATE);
                 updatePlayer();
                 timeAccumulator -= SECONDS_PER_UPDATE;
-                updates++; // Para debugar o FPS
+                updates++;
             }
 
-            // Lógica de Renderização com Variable Timestep com Interpolação
-            final float interpolation = (float) (timeAccumulator / SECONDS_PER_UPDATE);
-            render(interpolation);
+            // Renderização
+            render(0);
             gamePanel.repaint();
             frames++;
 
-            // Exibe o FPS e UPS
+            // --- EXIBIÇÃO DE FPS/UPS NO TERMINAL ---
             if (System.currentTimeMillis() - timer > 1000) {
-                System.out.printf("UPS: %d, FPS: %d%n, Tempo: %.2f s%n", updates, frames, elapsedGameTimeSeconds);
-                updates = 0;
+                // Imprime no console
+                System.out.printf("FPS: %d | UPS: %d | Tempo Jogo: %.2f s%n", frames, updates, elapsedGameTimeSeconds);
+
+                // Reinicia os contadores para o próximo segundo
                 frames = 0;
+                updates = 0;
                 timer += 1000;
             }
 
-            // Sistema de pausa para máquinas muito fortes de hardware
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            // --- CÓDIGO PARA TRAVAR O FPS EM 60 ---
+
+            // 1. Calcula quanto tempo levou para processar e desenhar este frame
+            frameDrawTime = System.nanoTime() - frameStartTime;
+
+            // 2. Define o tempo total que um frame deve durar (aprox 16.6ms)
+            long targetTime = (long) (SECONDS_PER_UPDATE * 1000000000);
+
+            // 3. Calcula quanto tempo sobra para dormir
+            timeToSleep = targetTime - frameDrawTime;
+
+            if (timeToSleep > 0) {
+                try {
+                    // Converte de nanosegundos para milissegundos para o sleep
+                    Thread.sleep(timeToSleep / 1000000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+            // ---------------------------------------
         }
     }
 

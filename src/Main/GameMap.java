@@ -41,7 +41,7 @@ public class GameMap {
     private final int plataformaAltura = 150;
 
     //=============================CAMERA SINCRONIZADA AO PLAYER=============================
-    private int cameraX = 0;
+    private double cameraX = 0;
 
     // =============================RESOLUÇÃO=============================
     private int lastW = -1;
@@ -138,9 +138,9 @@ public class GameMap {
 
         // =============================CONJUNTO DE NUVEM PARA PARALLAX=============================
         // Nuvens conjunto 1
-        if (NuvensLonge1 != null) NuvensLonge1.drawTiled(g, width, height, cameraX);
-        if (NuvensMedia1 != null) NuvensMedia1.drawTiled(g, width, height, cameraX);
-        if (NuvensPerto1 != null) NuvensPerto1.drawTiled(g, width, height, cameraX);
+        if (NuvensLonge1 != null) NuvensLonge1.drawTiled(g, width, height, (int)cameraX);
+        if (NuvensMedia1 != null) NuvensMedia1.drawTiled(g, width, height, (int)cameraX);
+        if (NuvensPerto1 != null) NuvensPerto1.drawTiled(g, width, height, (int)cameraX);
 
         // Nuvens conjunto 2
         /*if (NuvensLonge2 != null) NuvensLonge2.drawTiled(g, width, height, cameraX);
@@ -161,7 +161,7 @@ public class GameMap {
 
         // ============================= DESENHAR GRAMA / CHÃO =============================
         int groundY = height - plataformaAltura;
-        if (camadaGrama != null) camadaGrama.drawLine(g, width, groundY, cameraX);
+        if (camadaGrama != null) camadaGrama.drawLine(g, width, groundY, (int)cameraX);
 
     }
 
@@ -298,18 +298,23 @@ public class GameMap {
     }
 
     public int getCameraX() {
-        return this.cameraX;
+        return (int) this.cameraX;
     }
 
     public void update(int playerWorldX, int screenWidth) {
         // Zona morta: Onde a câmera começa a andar
         int deadzone = screenWidth / 3; // Ou / 2, conforme seu gosto
+        double targetX = 0;
 
-        // Lógica absoluta: Câmera é Player - Deadzone
         if (playerWorldX > deadzone) {
-            this.cameraX = playerWorldX - deadzone;
+            targetX = playerWorldX - deadzone;
         } else {
-            this.cameraX = 0;
+            targetX = 0;
         }
+
+        // 2. Aplica a suavização (Lerp)
+        // O valor 0.05 significa que a câmera percorre 5% da distância a cada frame.
+        // Ajuste entre 0.05 (muito suave/lento) e 0.2 (rápido).
+        this.cameraX += (targetX - this.cameraX) * 0.05;
     }
 }
