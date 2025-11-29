@@ -87,10 +87,10 @@ git clone https://github.com/AndersonJJR/Game.git
       </a>
     </td>
     <td align="center">
-      <a href="URL_DO_LINKEDIN_OU_GITHUB_AQUI">
-        <img src="https://avatars.githubusercontent.com/u/00000000?v=4" width="100px;" alt="Foto do Membro 5"/><br>
+      <a href="https://www.linkedin.com/in/ellencr2907/#:~:text=www.linkedin.com/in/ellencr2907">
+        <img src="https://media.licdn.com/dms/image/v2/D4D03AQGT8r7WmRwn0w/profile-displayphoto-shrink_400_400/B4DZcFZ9blGgAg-/0/1748142382569?e=1766016000&v=beta&t=xvWxlQwhRQkkXiyJEwLlSDXb6WXNJk_bzn-zQtv-E9k" width="100px;" alt="Foto do Membro 5"/><br>
         <sub>
-          <b>Nome do Membro 5</b>
+          <b>Ellen Cristine </b>
         </sub>
       </a>
     </td>
