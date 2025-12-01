@@ -95,8 +95,8 @@ git clone https://github.com/AndersonJJR/Game.git
       </a>
     </td>
     <td align="center">
-      <a href="URL_DO_LINKEDIN_OU_GITHUB_AQUI">
-        <img src="https://avatars.githubusercontent.com/u/00000000?v=4" width="100px;" alt="Foto do Membro 6"/><br>
+      <a href="https://github.com/Teuu25255">
+        <img src="/images/Matheus.jpg" width="100px;" alt="Foto do Membro 6"/><br>
         <sub>
           <b>Nome do Membro 6</b>
         </sub>
