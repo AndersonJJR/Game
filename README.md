@@ -98,7 +98,7 @@ git clone https://github.com/AndersonJJR/Game.git
       <a href="https://github.com/Teuu25255">
         <img src="/images/Matheus.jpg" width="100px;" alt="Foto do Membro 6"/><br>
         <sub>
-          <b>Nome do Membro 6</b>
+          <b>Matheus Santana</b>
         </sub>
       </a>
     </td>
