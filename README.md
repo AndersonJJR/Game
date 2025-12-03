@@ -37,6 +37,10 @@ Antes de começar, certifique-se de ter o seguinte ambiente configurado na sua m
 * **MySQL Server** instalado e rodando.
 * Uma IDE Java de sua preferência (Recomendado: IntelliJ IDEA, Eclipse ou VS Code).
 
+## 💻 GAMEPLAY
+
+  https://www.youtube.com/watch?v=hkzoUeQ_W4E
+
 ## 💻 Como Rodar o Projeto
 
 Como o projeto ainda não possui um executável (`.jar` ou `.exe`) distribuído, a execução deve ser feita através da IDE. Siga os passos abaixo:
