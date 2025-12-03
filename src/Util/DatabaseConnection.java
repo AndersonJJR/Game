@@ -11,13 +11,13 @@ import java.util.List;
 
 public class DatabaseConnection {
 
-    private static final String DB_URL = "jdbc:mysql://26.190.228.198:3306/game_data"; // IP DO BANCO E NOME DO BANCO
-    private static final String DB_USER = "root"; //USUARIO DO BANCO
-    private static final String DB_PASS = "root";   //SENHA DO BANCO
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/game_data"; // DEFINA O IP E A PORTA DO SEU BANCO DE DADOS MYSQL
+    private static final String DB_USER = "XXXXX"; //SUBSTITUA O XXXXX PELO SEU USUARIO DO BANCO
+    private static final String DB_PASS = "XXXXX"; //SUBISTITUA O XXXXX PELA SENHA SENHA DO BANCO
 
     public static Connection getConnection() {
         try {
-            // Isso registra o driver, embora em JDBC 4.0+ seja muitas vezes automático
+            // Isso registra o driver
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             // Tenta estabelecer a conexão
@@ -36,7 +36,7 @@ public class DatabaseConnection {
         }
     }
 
-    // Metodo simples para testar a conexão (opcional)
+    // Metodo simples para testar a conexão 
     public static void main(String[] args) {
         Connection conn = getConnection();
         if (conn != null) {
@@ -54,7 +54,7 @@ public class DatabaseConnection {
         String selectSql = "SELECT id_jogador FROM tbl_jogador WHERE nome = ?";
         String insertSql = "INSERT INTO tbl_jogador (nome) VALUES (?)";
 
-        // Usamos um try-with-resources para a conexão (fecha automaticamente)
+        //try-with-resources para a conexão (fecha automaticamente)
         try (Connection conn = getConnection()) {
 
             if (conn == null) return -1;
@@ -104,7 +104,7 @@ public class DatabaseConnection {
     }
 
     public static void saveScore(int playerID, int pontos, double tempoCorrido) {
-        // Agora salvamos 'pontos' (distância) e 'tempo_corrido'
+        // Metodo para salvar 'pontos' (distância) e 'tempo_corrido'
         String sql = "INSERT INTO tbl_pontuacao (id_jogador, pontos, tempo_corrido) VALUES (?, ?, ?)";
 
         try (Connection conn = getConnection();
@@ -131,7 +131,7 @@ public class DatabaseConnection {
     public static List<String> getTopScores() {
         List<String> topScores = new ArrayList<>();
 
-        // MUDANÇA: ORDER BY p.pontos DESC (Quem foi mais longe aparece primeiro)
+        //ORDER BY p.pontos DESC (Quem foi mais longe aparece primeiro)
         String sql = "SELECT j.nome, p.tempo_corrido, p.pontos " +
                 "FROM tbl_pontuacao p " +
                 "JOIN tbl_jogador j ON p.id_jogador = j.id_jogador " +
@@ -163,3 +163,4 @@ public class DatabaseConnection {
         return topScores;
     }
 }
+
